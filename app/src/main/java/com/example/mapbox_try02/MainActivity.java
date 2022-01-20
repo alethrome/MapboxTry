@@ -116,54 +116,52 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onMapReady(final MapboxMap mapboxMap) {
+    public void OnMapReady(final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
 
-            public void onStyleLoaded(@NonNull Style style) {
+            public void  onStyleLoaded(@NonNull Style style) {
 
-                enableLocationComponent(style);
-                initSearchFab();
+                enableLocationComponent(style); // function to show user's location
+                initSearchFab(); // function to initialize location search
 
-                addUserLocations();
+                addUserLocations(); // function to add default locations in autocomplete location search
                 Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_location_on_24, null);
-                Bitmap mBitmap = BitmapUtils.getBitmapFromDrawable(drawable);
+                Bitmap nBitmap = BitmapUtils.getBitmapFromDrawable(drawable);
                 // Add the symbol layer icon to map for future use
-                style.addImage(symbolIconId, mBitmap);
+                style.addImage(symbolIconId, nBitmap);
 
-                // Create an empty GeoJSON source using the empty feature collection
+                // Create an empty  GeoJSON source using the empty feature collection
                 setUpSource(style);
 
-                // Set up a new symbol layer for displaying the searched location's feature coordinates
+                // Setup a new symbol lar for displaying  the searched location's feature coordinates
                 setUpLayer(style);
-
 
                 initSource(style);
 
                 initLayers(style);
-                //  CameraPosition position = new CameraPosition.Builder().target(new LatLng(destination.latitude(), destination.longitude()))
-                //      .zoom(13).tilt(13).build();
-                //  mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 100);
+                //
+                //
+                //
+
                 mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
                     LatLng source;
 
                     @Override
                     public boolean onMapClick(@NonNull LatLng point) {
 
-                        if (c == 0) {
+                        if (c == 0) { // c is used to count clicks on the map
                             origin = Point.fromLngLat(point.getLongitude(), point.getLatitude());
                             source = point;
                             MarkerOptions markerOptions = new MarkerOptions();
                             markerOptions.position(point);
                             markerOptions.title("Source");
                             mapboxMap.addMarker(markerOptions);
-                            reverseGeocodeFunc(point,c);
-
-
+                            reverseGeocodeFunc(point, c); // to get location details, place name form latitude longitude
                         }
-                        if (c == 1) {
+                        if (c == 1) { // if c==1 then destination
                             destination = Point.fromLngLat(point.getLongitude(), point.getLatitude());
                             getRoute(mapboxMap, origin, destination);
                             MarkerOptions markerOptions2 = new MarkerOptions();
@@ -171,45 +169,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             markerOptions2.title("destination");
                             mapboxMap.addMarker(markerOptions2);
                             reverseGeocodeFunc(point,c);
-                            getRoute(mapboxMap, origin, destination);
-                            // double d = point.distanceTo(source);
-
-
-
+                            getRoute(mapboxMap, origin, destination); // then we show the route using polylines
+                            //double d = point.distanceTo(source);
                         }
 
-
-
-                      /*  startActivityForResult(
-                                new PlacePicker.IntentBuilder()
-                                        .accessToken("pk.eyJ1IjoiemFoaWQxNiIsImEiOiJja2UxZ3lpaGE0NHFuMnJtcXc5djcxeGVtIn0.V5lnAKqektnfC1pARBQYUQ")
-                                        .placeOptions(PlacePickerOptions.builder()
-                                                .statingCameraPosition(new CameraPosition.Builder()
-                                                        .target(point).zoom(16).build())
-                                                .build())
-                                        .build(this), REQUEST_CODE);
-                        */
                         if (c > 1) {
                             c = 0;
-                            recreate();
-                            // mapboxMap.clear();
-                            //   Toast.makeText(MainActivity.this,d+" metres", Toast.LENGTH_LONG).show();
+                            recreate(); // more than 2 clicks will restart the activity
 
                         }
-
                         c++;
                         return true;
-
-
                     }
-
                 });
-
             }
         });
-
-
     }
+
     private void reverseGeocodeFunc(LatLng point, int c) { // for getting place name
         MapboxGeocoding reverseGeocode = MapboxGeocoding.builder()
                 .accessToken("pk.eyJ1IjoiYWFhYWRpYXoiLCJhIjoiY2t5aTNzeGd5MjhpZzJ4cGIzMGsxYW1rbCJ9.uMZy0SCPJduUtheZlsln0Q")
